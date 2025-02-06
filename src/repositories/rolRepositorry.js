@@ -33,7 +33,7 @@ const createRol = async (data) => {
         })
 
         if (existeRol) {
-            return ResponseHandler.error('El rol ya existe en el sistema', 400)
+            return ResponseHandler.error('El rol ya existe en el sistema', 404)
         }
 
         const rol = await Rol.create(data)
