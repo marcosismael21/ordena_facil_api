@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const db = require("../models");
-const User = db.Usuario; 
+const User = db.Colaborador; 
 const { tokenVerificationError } = require("../utils/tokenManager");
 
 const verifyToken = async (req, res, next) => {
