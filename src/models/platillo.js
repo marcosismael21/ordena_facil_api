@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   Platillo.init({
     nombre: DataTypes.STRING,
     descripcion: DataTypes.STRING,
+    imageUrl: DataTypes.STRING,
     tipoplatilloId: DataTypes.INTEGER,
     precio: DataTypes.DECIMAL,
     estado: DataTypes.BOOLEAN

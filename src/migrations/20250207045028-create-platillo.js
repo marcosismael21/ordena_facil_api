@@ -15,6 +15,9 @@ module.exports = {
       descripcion: {
         type: Sequelize.STRING
       },
+      imageUrl: {
+        type: Sequelize.STRING
+      },
       tipoplatilloId: {
         type: Sequelize.INTEGER
       },
