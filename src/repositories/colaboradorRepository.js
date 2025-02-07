@@ -34,7 +34,7 @@ const createColaborador = async (data) => {
         })
 
         if (existe) {
-            return ResponseHandler.error('El dni ya existe en el sistema', 404)
+            return ResponseHandler.error('El dni ya existe en el sistema')
         }
 
         const existeUser = await Colaborador.findOne({
@@ -44,7 +44,7 @@ const createColaborador = async (data) => {
         })
 
         if (existeUser) {
-            return ResponseHandler.error('El usuario ya existe en el sistema', 404)
+            return ResponseHandler.error('El usuario ya existe en el sistema')
         }
 
         const colaborador = await Colaborador.create(data)

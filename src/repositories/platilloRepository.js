@@ -33,7 +33,7 @@ const createPlatillo = async (data) => {
         })
 
         if (existePlatillo) {
-            return ResponseHandler.error('El platillo ya existe en el sistema', 404)
+            return ResponseHandler.error('El platillo ya existe en el sistema')
         }
 
         const platillo = await Platillo.create(data)
