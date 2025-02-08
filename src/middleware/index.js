@@ -1,4 +1,4 @@
 const verifyToken = require("./authJwt");
-//const verifySignUp = require("./verifySignUp");
+const verifyTokenCliente = require("./authJwtCliente");
 
-module.exports = { verifyToken }
+module.exports = { verifyToken, verifyTokenCliente }
