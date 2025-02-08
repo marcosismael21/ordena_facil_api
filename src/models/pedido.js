@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     numeroOrden: DataTypes.STRING,
     clienteId: DataTypes.INTEGER,
     colaboradorId: DataTypes.INTEGER,
-    ipoPedidoId: DataTypes.INTEGER,
+    tipoPedidoId: DataTypes.INTEGER,
     direccionId: DataTypes.INTEGER,
     fechaCompra: DataTypes.DATEONLY,
     subtotal: DataTypes.DECIMAL,

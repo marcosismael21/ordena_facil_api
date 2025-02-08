@@ -15,6 +15,7 @@ const extraRoutes = require('./extra.routes')
 const tipoPedidoRoutes = require('./tipoPedido.routes')
 const clienteRoutes = require('./cliente.routes')
 const direccionRoutes = require('./direccion.routes')
+const pedidoRoutes = require('./pedido.routes')
 
 router.use('/api/rol', rolRoutes)
 router.use('/api/colaborador', colaboradorRoutes)
@@ -29,5 +30,6 @@ router.use('/api/extra', extraRoutes)
 router.use('/api/tipoPedido', tipoPedidoRoutes)
 router.use('/api/cliente', clienteRoutes)
 router.use('/api/direccion', direccionRoutes)
+router.use('/api/pedido', pedidoRoutes)
 
 module.exports = router
