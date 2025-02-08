@@ -3,6 +3,11 @@ const proveedorController = require('../controllers/proveedorController')
 const { verifyToken } = require('../middleware/index')
 const router = express.Router()
 const { ValidationRules, validate } = require('../middleware/validaciones/proveedorValidation')
+const validateApiKey = require('../middleware/apiKeyMiddleware')
+const validatePlatform = require('../middleware/platformValidation')
+
+router.use(validateApiKey)
+router.use(validatePlatform)
 
 router.get('/', verifyToken, proveedorController.getAllProveedor)
 router.get('/:id', verifyToken, proveedorController.getProveedorById)

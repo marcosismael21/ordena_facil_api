@@ -3,6 +3,11 @@ const productoController = require('../controllers/productoController')
 const { verifyToken } = require('../middleware/index')
 const router = express.Router()
 const { ValidationRules, validate } = require('../middleware/validaciones/productoValidation')
+const validateApiKey = require('../middleware/apiKeyMiddleware')
+const validatePlatform = require('../middleware/platformValidation')
+
+router.use(validateApiKey)
+router.use(validatePlatform)
 
 router.get('/', verifyToken, productoController.getAllProducto)
 router.get('/:id', verifyToken, productoController.getProductoById)

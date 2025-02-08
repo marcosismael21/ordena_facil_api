@@ -3,6 +3,11 @@ const tipoPlatillo = require('../controllers/tipoPlatilloController')
 const { verifyToken } = require('../middleware/index')
 const router = express.Router()
 const { variasValidationRules, validate } = require('../middleware/validaciones/validacionesVarias')
+const validateApiKey = require('../middleware/apiKeyMiddleware')
+const validatePlatform = require('../middleware/platformValidation')
+
+router.use(validateApiKey)
+router.use(validatePlatform)
 
 router.get('/', verifyToken, tipoPlatillo.getAllTipoPlatillo)
 router.get('/:id', verifyToken, tipoPlatillo.getTipoPlatilloById)

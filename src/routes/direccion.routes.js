@@ -3,6 +3,11 @@ const direccionController = require('../controllers/direccionController')
 const { verifyToken } = require('../middleware/index')
 const router = express.Router()
 const { ValidationRules, validate } = require('../middleware/validaciones/direccionValidation')
+const validateApiKey = require('../middleware/apiKeyMiddleware')
+const validatePlatform = require('../middleware/platformValidation')
+
+router.use(validateApiKey)
+router.use(validatePlatform)
 
 router.get('/', verifyToken, direccionController.getAllDireccion)
 router.get('/:id', verifyToken, direccionController.getDireccionById)

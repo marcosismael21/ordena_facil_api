@@ -3,6 +3,11 @@ const categoriaController = require('../controllers/categoriaController')
 const { verifyToken } = require('../middleware/index')
 const router = express.Router()
 const { variasValidationRules, validate } = require('../middleware/validaciones/validacionesVarias')
+const validateApiKey = require('../middleware/apiKeyMiddleware')
+const validatePlatform = require('../middleware/platformValidation')
+
+router.use(validateApiKey)
+router.use(validatePlatform)
 
 router.get('/', verifyToken, categoriaController.getAllCategoria)
 router.get('/:id', verifyToken, categoriaController.getCategoriaById)

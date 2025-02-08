@@ -3,6 +3,11 @@ const platilloDetalleController = require('../controllers/platilloDetalleControl
 const { verifyToken } = require('../middleware/index')
 const router = express.Router()
 const { ValidationRules, validate } = require('../middleware/validaciones/platilloDetalleValidation')
+const validateApiKey = require('../middleware/apiKeyMiddleware')
+const validatePlatform = require('../middleware/platformValidation')
+
+router.use(validateApiKey)
+router.use(validatePlatform)
 
 router.get('/', verifyToken, platilloDetalleController.getAllPlatilloDetalle)
 router.get('/:id', verifyToken, platilloDetalleController.getPlatilloDetalleById)

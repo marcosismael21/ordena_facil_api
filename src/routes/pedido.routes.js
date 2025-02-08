@@ -2,6 +2,11 @@ const express = require('express')
 const pedidoController = require('../controllers/pedidoController')
 const { verifyToken } = require('../middleware/index')
 const router = express.Router()
+const validateApiKey = require('../middleware/apiKeyMiddleware')
+const validatePlatform = require('../middleware/platformValidation')
+
+router.use(validateApiKey)
+router.use(validatePlatform)
 
 router.get('/', verifyToken, pedidoController.getAllPedido)
 router.get('/:id', verifyToken, pedidoController.getPedidoById)
