@@ -16,6 +16,7 @@ const tipoPedidoRoutes = require('./tipoPedido.routes')
 const clienteRoutes = require('./cliente.routes')
 const direccionRoutes = require('./direccion.routes')
 const pedidoRoutes = require('./pedido.routes')
+const promocionRoutes = require('./promocion.routes')
 
 //rutas web
 router.use('/api-web/rol', rolRoutes)
@@ -32,6 +33,7 @@ router.use('/api-web/tipoPedido', tipoPedidoRoutes)
 router.use('/api-web/cliente', clienteRoutes)
 router.use('/api-web/direccion', direccionRoutes)
 router.use('/api-web/pedido', pedidoRoutes)
+router.use('/api-web/promocion', promocionRoutes)
 
 //rutas mobile
 router.use('/api-mobile/rol', rolRoutes)
@@ -48,5 +50,6 @@ router.use('/api-mobile/tipoPedido', tipoPedidoRoutes)
 router.use('/api-mobile/cliente', clienteRoutes)
 router.use('/api-mobile/direccion', direccionRoutes)
 router.use('/api-mobile/pedido', pedidoRoutes)
+router.use('/api-mobile/promocion', promocionRoutes)
 
 module.exports = router

@@ -14,7 +14,7 @@ app.use(
     cors({
         origin: function (origin, callback) {
             console.log("😲😲😲 Request origin =>", origin)
-            // Verificar si es una petición de desarrollo (Postman, curl, etc.)
+            // Verificar si es una petición de desarrollo
             if (!origin && process.env.NODE_ENV === 'development') {
                 console.log("Development request");
                 return callback(null, true);
