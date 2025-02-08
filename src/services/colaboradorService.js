@@ -65,7 +65,7 @@ const login = async (data, res) => {
             const isSame = await bcryp.compare(clave, colaborador.clave)
             if (isSame) {
 
-                const { token, expiresIn } = generateToken(colaborador.id)
+                const { token, expiresIn } = generateToken(colaborador.id, 'web')
 
                 let userData = {
                     id: colaborador.id,
