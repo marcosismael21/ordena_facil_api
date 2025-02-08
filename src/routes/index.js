@@ -9,6 +9,7 @@ const platilloRoutes = require('./platillo.routes')
 const platilloDetalleRoutes = require('./platilloDetalle.routes')
 const proveedorRoutes = require('./proveedor.routes')
 const tipoMedidaRoutes = require('./tipoMedida.routes')
+const categoriaRoutes = require('./categoria.routes')
 
 router.use('/api/rol', rolRoutes)
 router.use('/api/colaborador', colaboradorRoutes)
@@ -17,5 +18,6 @@ router.use('/api/platillo', platilloRoutes)
 router.use('/api/platilloDetalle', platilloDetalleRoutes)
 router.use('/api/proveedor', proveedorRoutes)
 router.use('/api/tipoMedida', tipoMedidaRoutes)
+router.use('/api/categoria', categoriaRoutes)
 
 module.exports = router
