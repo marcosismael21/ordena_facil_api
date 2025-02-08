@@ -1,11 +1,12 @@
 const jwt = require("jsonwebtoken");
 
-const generateToken = (id) => {
+const generateToken = (id, platform) => {
     const expiresIn = 60 * 15;
     try {
         const token = jwt.sign(
             {
                 id: id,
+                platform: platform
             },
             process.env.JWT_SECRET,
             {
