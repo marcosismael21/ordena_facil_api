@@ -18,6 +18,15 @@ const getTipoPlatilloById = async (id) => {
     }
 }
 
+const getTipoPlatilloByActivate = async () => {
+    try {
+        const tipoPlatillo = await tipoPlatilloRepository.getTipoPlatilloByActive()
+        return (tipoPlatillo) ? tipoPlatillo : []
+    } catch (error) {
+        throw error
+    }
+}
+
 const createTipoPlatillo = async (data) => {
     try {
         const tipoPlatillo = await tipoPlatilloRepository.createTipoPlatillo(data)
@@ -51,4 +60,5 @@ module.exports = {
     createTipoPlatillo,
     updateTipoPlatillo,
     deleteTipoPlatillo,
+    getTipoPlatilloByActivate,
 }

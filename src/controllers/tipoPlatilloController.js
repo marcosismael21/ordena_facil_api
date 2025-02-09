@@ -19,6 +19,15 @@ const getTipoPlatilloById = async (req, res, next) => {
     }
 }
 
+const getTipoPlatilloByActivate = async (req, res, next) => {
+    try {
+        const tipoPlatillo = await tipoPlatilloService.getTipoPlatilloByActivate()
+        return res.status(200).json(tipoPlatillo)
+    } catch (error) {
+        next(error)
+    }
+}
+
 const createTipoPlatillo = async (req, res, next) => {
     const {
         descripcion,
@@ -74,5 +83,6 @@ module.exports = {
     getTipoPlatilloById,
     createTipoPlatillo,
     updateTipoPlatillo,
-    deleteTipoPlatillo
+    deleteTipoPlatillo,
+    getTipoPlatilloByActivate,
 }

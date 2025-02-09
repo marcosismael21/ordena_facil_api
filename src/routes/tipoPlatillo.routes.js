@@ -10,6 +10,7 @@ router.use(validateApiKey)
 router.use(validatePlatform)
 
 router.get('/', verifyToken, tipoPlatillo.getAllTipoPlatillo)
+router.get('/activate', verifyToken, tipoPlatillo.getTipoPlatilloByActivate)
 router.get('/:id', verifyToken, tipoPlatillo.getTipoPlatilloById)
 router.post('/', [verifyToken, variasValidationRules(), validate], tipoPlatillo.createTipoPlatillo)
 router.put('/:id', [verifyToken, variasValidationRules(), validate], tipoPlatillo.updateTipoPlatillo)

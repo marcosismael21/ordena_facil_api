@@ -24,6 +24,19 @@ const getTipoPlatilloById = async (id) => {
     }
 }
 
+const getTipoPlatilloByActive = async () => {
+    try {
+        const tipoPlatillo = await TipoPlatillo.findAll({
+            where: {
+                estado: 1
+            }
+        })
+        return ResponseHandler.success(tipoPlatillo)
+    } catch (error) {
+        throw error
+    }
+}
+
 const createTipoPlatillo = async (data) => {
     try {
         const existeTipoPlatillo = await TipoPlatillo.findOne({
@@ -74,5 +87,6 @@ module.exports = {
     getTipoPlatilloById,
     createTipoPlatillo,
     updateTipoPlatillo,
-    deleteTipoPlatillo
+    deleteTipoPlatillo,
+    getTipoPlatilloByActive,
 }
