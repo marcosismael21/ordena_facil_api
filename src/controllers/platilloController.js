@@ -26,6 +26,8 @@ const createPlatillo = async (req, res, next) => {
         tipoplatilloId,
         precio,
         imageUrl,
+        productoIds,
+        cantidad,
         estado
     } = req.body
 
@@ -35,6 +37,8 @@ const createPlatillo = async (req, res, next) => {
         tipoplatilloId,
         precio,
         imageUrl,
+        productoIds,
+        cantidad,
         estado
     }
 
@@ -55,6 +59,8 @@ const updatePlatillo = async (req, res, next) => {
         tipoplatilloId,
         precio,
         imageUrl,
+        productoIds,
+        cantidad,
         estado
     } = req.body
 
@@ -64,6 +70,8 @@ const updatePlatillo = async (req, res, next) => {
         tipoplatilloId,
         precio,
         imageUrl,
+        productoIds,
+        cantidad,
         estado
     }
 
