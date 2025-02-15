@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const generateToken = (id, platform) => {
-    const expiresIn = 60 * 15;
+    const expiresIn = 60000000 * 15;
     try {
         const token = jwt.sign(
             {
