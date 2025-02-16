@@ -38,7 +38,8 @@ const getPlatilloById = async (id) => {
                         pl.image_url AS imageUrl,
                         pl.precio,
                         pl.estado,
-                        tpl.descripcion AS tipoPlatillo,
+                        pl.tipoplatillo_id as tipoplatilloId,
+                        tpl.descripcion AS tipoplatillo,
                         CONCAT( GROUP_CONCAT(pd.id ORDER BY pd.id ASC SEPARATOR ',')) AS detalleId,
                         CONCAT(GROUP_CONCAT(pd.cantidad ORDER BY pd.id ASC SEPARATOR ',')) AS cantidad,
                         CONCAT(GROUP_CONCAT(pr.descripcion ORDER BY pd.id ASC SEPARATOR ', ')) AS productoDescripcion
@@ -49,7 +50,7 @@ const getPlatilloById = async (id) => {
                      WHERE pl.id = :xid
                      GROUP BY pl.id;`
 
-        const platillo =  await sequelize.query(sql, {
+        const platillo = await sequelize.query(sql, {
             replacements: {
                 xid: id
             },
@@ -142,14 +143,27 @@ const updatePlatillo = async (data, id) => {
 }
 
 const deletePlatillo = async (id) => {
+    const transaction = await db.sequelize.transaction()
     try {
+
+        await PlatilloDetalle.destroy({
+            transaction,
+            where: {
+                platilloId: id
+            }
+        })
+
         const platillo = await Platillo.destroy({
+            transaction,
             where: {
                 id: id
             }
         })
+
+        await transaction.commit()
         return ResponseHandler.success(platillo, 'Platillo eliminado exitosamente');
     } catch (error) {
+        await transaction.rollback()
         throw error
     }
 }
