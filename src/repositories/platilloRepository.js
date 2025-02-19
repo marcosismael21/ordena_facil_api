@@ -13,6 +13,7 @@ const getAllPlatillo = async () => {
                         pl.nombre, 
                         pl.image_url as imageUrl, 
                         pl.precio, 
+                        pl.descripcion,
                         pl.tipoplatillo_id as tipoPlatilloId,
                         tpl.descripcion as tipoPlatillo ,
                         pl.estado
