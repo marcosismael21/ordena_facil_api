@@ -21,30 +21,39 @@ const getPedidoById = async (req, res, next) => {
 
 const createPedido = async (req, res, next) => {
     const {
-        numeroOrden,
+        //valores de pedido
         clienteId,
         colaboradorId,
         tipoPedidoId,
         direccionId,
-        subtotal,
-        impuesto,
-        descuento,
-        total,
-        estadoId,
+        descuentoPedido,
+        //valores de pedido detalle
+        platilloIds,
+        cantidadPedidoDetalles,
+        precioUnitarioPedidoDetalles,
+        contExtras,
+        //valores de extra
+        productoIds,
+        cantidadExtras,
+        precioUnitarioExtras
     } = req.body
 
     const data = {
-        numeroOrden,
+        //valores de pedido
         clienteId,
         colaboradorId,
         tipoPedidoId,
         direccionId,
-        fechaCompra: new Date(),
-        subtotal,
-        impuesto,
-        descuento,
-        total,
-        estadoId,
+        descuentoPedido,
+        //valores de pedido detalle
+        platilloIds,
+        cantidadPedidoDetalles,
+        precioUnitarioPedidoDetalles,
+        contExtras,
+        //valores de extra
+        productoIds,
+        cantidadExtras,
+        precioUnitarioExtras,
     }
 
     try {

@@ -33,7 +33,7 @@ const createPedido = async (data) => {
         const {
             //valores de pedido
             clienteId,
-            colaborarId,
+            colaboradorId,
             tipoPedidoId,
             direccionId,
             descuentoPedido,
@@ -42,12 +42,10 @@ const createPedido = async (data) => {
             cantidadPedidoDetalles,
             precioUnitarioPedidoDetalles,
             contExtras,
-            subTotalPedidoDetalle,
             //valores de extra
             productoIds,
             cantidadExtras,
             precioUnitarioExtras,
-            subtotalExtras,
         } = data
 
         //validar que los arrays tengan la misma longitud
@@ -60,13 +58,22 @@ const createPedido = async (data) => {
             throw new Error('Los arrays de detalles deben tener la misma longitud');
         }
 
+
+        //validar arrays de extras si hay contExtras con valor 1
+        const tieneExtras = contExtras.some(extra => extra === 1);
+        if (tieneExtras) {
+            if (!productoIds?.length || !cantidadExtras?.length || !precioUnitarioExtras?.length) {
+                throw new Error('Faltan datos de extras');
+            }
+        }        
+
         const numOrden = await generateOrderNumber(tipoPedidoId, Pedido)
 
         //crear cabecera de pedido
         const pedido = await Pedido.create({
             numeroOrden: numOrden,
             clienteId: clienteId,
-            colaborarId: colaborarId,
+            colaboradorId: colaboradorId,
             tipoPedidoId: tipoPedidoId,
             direccionId: direccionId,
             fechaCompra: Date.now(),
@@ -77,17 +84,18 @@ const createPedido = async (data) => {
             estadoId: 1,
         }, { transaction })
 
-        let totalSubtotal = 0;
+        let totalSubtotal = 0
+        let extraIndex = 0
 
         //crear detalle de pedido
         const detallesCreados = await Promise.all(
             platilloIds.map(async (platilloId, index) => {
-                const cantidad = cantidadPedidoDetalles[index];
-                const precioUnitario = precioUnitarioPedidoDetalles[index];
-                const subtotal = cantidad * precioUnitario;
-                totalSubtotal += subtotal;
+                const cantidad = cantidadPedidoDetalles[index]
+                const precioUnitario = precioUnitarioPedidoDetalles[index]
+                const subtotal = cantidad * precioUnitario
+                totalSubtotal += subtotal
 
-                return await PedidoDetalle.create({
+                const detalle = await PedidoDetalle.create({
                     pedidoId: pedido.id,
                     platilloId,
                     cantidad,
@@ -95,29 +103,27 @@ const createPedido = async (data) => {
                     contExtra: contExtras[index],
                     subTotal: subtotal,
                     estado: 1
-                }, { transaction });
-            })
-        )
+                }, { transaction })
 
-        //crear extra de pedido si existen
-        if (productoIds && productoIds.length > 0) {
-            const extrasPromises = detallesCreados.map(async (detalle, index) => {
-                if (contExtras[index]) {
-                    const extrasForDetalle = await Extra.create({
+                // Si este detalle tiene extra, crear el extra correspondiente
+                if (contExtras[index] === 1) {
+                    const extraSubtotal = cantidadExtras[extraIndex] * precioUnitarioExtras[extraIndex]
+                    await Extra.create({
                         pedidoDetalleId: detalle.id,
-                        productoId: productoIds[index],
-                        cantidad: cantidadExtras[index],
-                        precioUnitario: precioUnitarioExtras[index],
-                        subtotal: cantidadExtras[index] * precioUnitarioExtras[index],
+                        productoId: productoIds[extraIndex],
+                        cantidad: cantidadExtras[extraIndex],
+                        precioUnitario: precioUnitarioExtras[extraIndex],
+                        subtotal: extraSubtotal,
                         estado: 1
                     }, { transaction })
-
-                    totalSubtotal += extrasForDetalle.subtotal
-                    return extrasForDetalle
+                    
+                    totalSubtotal += extraSubtotal
+                    extraIndex++
                 }
-            }).filter(Boolean)
-            await Promise.all(extrasPromises)
-        }
+
+                return detalle
+            })
+        )
 
         //totales finales
         const impuesto = totalSubtotal * 0.15
