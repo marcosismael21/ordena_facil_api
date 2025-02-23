@@ -54,6 +54,35 @@ const createCliente = async (data) => {
     }
 }
 
+const createClienteCaja = async (data) => {
+    try {
+        const existe = await Cliente.findOne({
+            where: {
+                correo: data.correo
+            }
+        })
+
+        if (existe) {
+            return ResponseHandler.error('El correo ya existe en el sistema')
+        }
+
+        const existeUser = await Cliente.findOne({
+            where: {
+                dni: data.dni
+            }
+        })
+
+        if (existeUser) {
+            return ResponseHandler.error('El númerod de identidad ya existe en el sistema')
+        }
+
+        const cliente = await Cliente.create(data)
+        return ResponseHandler.success(cliente, 'usuario creado exitosamente')
+    } catch (error) {
+        throw error
+    }
+}
+
 const updateCliente = async (data, id) => {
     try {
         const cliente = await Cliente.update(data, {
@@ -103,4 +132,5 @@ module.exports = {
     updateCliente,
     deleteCliente,
     login,
+    createClienteCaja,
 }

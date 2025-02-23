@@ -12,6 +12,7 @@ router.use(validatePlatform)
 router.get('/', verifyToken, UserController.getAllCliente);
 router.get('/:id', verifyToken, UserController.getClienteById);
 router.post('/', UserController.createCliente);
+router.post('/caja', UserController.createClienteCaja);
 router.put('/:id', [verifyToken, ValidationRules(), validate], UserController.updateCliente);
 router.delete('/:id', verifyToken, UserController.deleteCliente);
 router.post('/login', UserController.login);

@@ -11,12 +11,12 @@ const ValidationRules = () => {
         body('telefono').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
             max: 255
         }).withMessage('Debe tener menos de 255 caracteres'),
-        body('usuario').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
+        /*body('usuario').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
             max: 255
         }).withMessage('Debe tener menos de 255 caracteres'),
         body('clave').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
             max: 255
-        }).withMessage('Debe tener menos de 255 caracteres'),
+        }).withMessage('Debe tener menos de 255 caracteres'),*/
         body('estado').notEmpty().withMessage("El campo es obligatorio").isBoolean().withMessage('Debe ser un valor boleano'),
     ];
 }

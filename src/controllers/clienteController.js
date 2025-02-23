@@ -28,6 +28,7 @@ const createCliente = async (req, res, next) => {
         correo,
         telefono,
         usuario,
+        dni,
         clave,
         estado
     } = req.body;
@@ -35,6 +36,7 @@ const createCliente = async (req, res, next) => {
     const data = {
         nombres,
         correo,
+        dni,
         telefono,
         usuario,
         clave: await bcryp.hash(clave, 10),
@@ -43,6 +45,32 @@ const createCliente = async (req, res, next) => {
 
     try {
         const cliente = await clienteService.createCliente(data);
+        return res.status(200).json(cliente);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const createClienteCaja = async (req, res, next) => {
+
+    const {
+        nombres,
+        correo,
+        telefono,
+        dni,
+        estado
+    } = req.body;
+
+    const data = {
+        nombres,
+        correo,
+        telefono,
+        dni,
+        estado
+    }
+
+    try {
+        const cliente = await clienteService.createClienteCaja(data);
         return res.status(200).json(cliente);
     } catch (error) {
         next(error);
@@ -167,4 +195,5 @@ module.exports = {
     deleteCliente,
     login,
     logout,
+    createClienteCaja,
 }

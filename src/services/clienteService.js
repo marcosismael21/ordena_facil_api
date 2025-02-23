@@ -93,6 +93,16 @@ const login = async (data, res) => {
     }
 }
 
+const createClienteCaja = async (data) => {
+    try {
+        const clienteCaja = await clienteRepository.createClienteCaja(data);
+        return (clienteCaja)? clienteCaja : [];
+    } catch (error) {
+        throw error;
+    }
+ 
+}
+
 
 module.exports = {
     getAllCliente,
@@ -101,4 +111,5 @@ module.exports = {
     updateCliente,
     deleteCliente,
     login,
+    createClienteCaja,
 }
