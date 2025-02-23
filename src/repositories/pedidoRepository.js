@@ -5,9 +5,32 @@ const Pedido = db.Pedido
 const PedidoDetalle = db.PedidoDetalle
 const Extra = db.Extra
 
+const { sequelize } = require("../models")
+const { QueryTypes, Transaction, } = require('sequelize')
+
 const getAllPedido = async () => {
     try {
-        const pedido = await Pedido.findAll()
+         const sql = 
+                    `SELECT 
+                        p.id,
+                        p.numero_orden AS numeroOrden,
+                        p.cliente_id AS clienteId,
+                        cl.nombres AS nombreCliente,
+                        cl.dni,
+                        p.colaborador_id AS colaboradorId,
+                        p.tipo_pedido_id AS tipoPedidoId,
+                        p.direccion_id AS direccionId,
+                        p.subtotal,
+                        p.impuesto,
+                        p.descuento,
+                        p.total,
+                        p.estado_id as estadoId
+                    FROM pedidos AS p
+                    LEFT JOIN clientes AS cl ON cl.id = p.cliente_id    
+                    where p.estado_id in (1, 2);`
+        const pedido =  await sequelize.query(sql, {           
+            type: QueryTypes.SELECT
+        })
         return ResponseHandler.success(pedido)
     } catch (error) {
         throw error
@@ -16,10 +39,12 @@ const getAllPedido = async () => {
 
 const getPedidoById = async (id) => {
     try {
-        const pedido = await Pedido.findOne({
-            where: {
-                id: id
-            }
+        const sql = ``
+        const pedido = await sequelize.query(sql, {
+            replacements: {
+                xid: id
+            },
+            type: QueryTypes.SELECT
         })
         return ResponseHandler.success(pedido)
     } catch (error) {
@@ -65,7 +90,7 @@ const createPedido = async (data) => {
             if (!productoIds?.length || !cantidadExtras?.length || !precioUnitarioExtras?.length) {
                 throw new Error('Faltan datos de extras');
             }
-        }        
+        }
 
         const numOrden = await generateOrderNumber(tipoPedidoId, Pedido)
 
@@ -116,7 +141,7 @@ const createPedido = async (data) => {
                         subtotal: extraSubtotal,
                         estado: 1
                     }, { transaction })
-                    
+
                     totalSubtotal += extraSubtotal
                     extraIndex++
                 }
