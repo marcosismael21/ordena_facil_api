@@ -18,7 +18,8 @@ const getAllPlatillo = async () => {
                         tpl.descripcion as tipoPlatillo ,
                         pl.estado
                         from platillos as pl left 
-                        join tipoplatillos as tpl on tpl.id = pl.tipoplatillo_id`
+                        join tipoplatillos as tpl on tpl.id = pl.tipoplatillo_id
+                        where pl.estado = 1`
 
         const platillo = await sequelize.query(sql, {
             type: QueryTypes.SELECT
