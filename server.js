@@ -4,6 +4,9 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { S3Client } = require("@aws-sdk/client-s3");
 const { query } = require("express-validator");
+const { createServer } = require('http');
+const { Server } = require('socket.io');
+const SocketEvents = require('./src/socket/socketEvents');
 require("dotenv").config();
 
 const PORT = process.env.PORT;
@@ -116,10 +119,43 @@ app.use((req, res) => {
     res.status(404).json({ message: "Ruta no encontrada" });
 });
 
-app.listen(PORT, () => {
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: function (origin, callback) {
+            if (!origin && process.env.NODE_ENV === 'development') {
+                return callback(null, true);
+            }
+            if (!origin) {
+                return callback(null, true);
+            }
+            if (whiteList.includes(origin)) {
+                return callback(null, true);
+            }
+            return callback("Error de CORS origin: " + origin + " No autorizado!");
+        },
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key']
+    }
+});
+
+app.set('io', io);
+
+const socketEvents = new SocketEvents(io);
+socketEvents.initialize();
+
+app.set('socketEvents', socketEvents);
+
+httpServer.listen(PORT, () => {
     console.log(`Server running on: http://localhost:${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV}`);
 });
+
+/*app.listen(PORT, () => {
+    console.log(`Server running on: http://localhost:${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV}`);
+});*/
 
 process.on('unhandledRejection', (err) => {
     console.log('UNHANDLED REJECTION! 💥 Shutting down...');

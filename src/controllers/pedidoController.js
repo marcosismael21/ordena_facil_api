@@ -57,8 +57,18 @@ const createPedido = async (req, res, next) => {
     }
 
     try {
+        const socketEvents = req.app.get('socketEvents');
         const pedido = await pedidoService.createPedido(data)
-        return res.status(200).json(pedido)
+
+        if (socketEvents && pedido.success) {
+            // Obtener el pedido completo
+            const pedidoCompleto = await pedidoService.getPedidoById(pedido.data.id);
+            if (pedidoCompleto.success) {
+                socketEvents.emitNuevoPedido(pedidoCompleto.data);
+            }
+        }
+
+        return res.status(200).json(pedido);
     } catch (error) {
         next(error)
     }

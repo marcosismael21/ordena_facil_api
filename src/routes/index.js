@@ -18,6 +18,7 @@ const direccionRoutes = require('./direccion.routes')
 const pedidoRoutes = require('./pedido.routes')
 const promocionRoutes = require('./promocion.routes')
 const uploadRoutes = require('./upload.routes')
+const cocinaRoutes = require('./cocina.routes')
 
 //rutas web
 router.use('/api-web/rol', rolRoutes)
@@ -36,6 +37,7 @@ router.use('/api-web/direccion', direccionRoutes)
 router.use('/api-web/pedido', pedidoRoutes)
 router.use('/api-web/promocion', promocionRoutes)
 router.use('/api-web/upload', uploadRoutes)
+router.use('/api-web/cocina', cocinaRoutes)
 
 //rutas mobile
 router.use('/api-mobile/rol', rolRoutes)

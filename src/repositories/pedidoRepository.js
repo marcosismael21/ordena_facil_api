@@ -10,8 +10,8 @@ const { QueryTypes, Transaction, } = require('sequelize')
 
 const getAllPedido = async () => {
     try {
-         const sql = 
-                    `SELECT 
+        const sql =
+            `SELECT 
                         p.id,
                         p.numero_orden AS numeroOrden,
                         p.cliente_id AS clienteId,
@@ -28,7 +28,7 @@ const getAllPedido = async () => {
                     FROM pedidos AS p
                     LEFT JOIN clientes AS cl ON cl.id = p.cliente_id    
                     where p.estado_id in (1, 2);`
-        const pedido =  await sequelize.query(sql, {           
+        const pedido = await sequelize.query(sql, {
             type: QueryTypes.SELECT
         })
         return ResponseHandler.success(pedido)
@@ -39,20 +39,79 @@ const getAllPedido = async () => {
 
 const getPedidoById = async (id) => {
     try {
-        const sql = ``
-        const pedido = await sequelize.query(sql, {
-            replacements: {
-                xid: id
-            },
-            type: QueryTypes.SELECT
-        })
-        return ResponseHandler.success(pedido)
-    } catch (error) {
-        throw error
-    }
-}
+        const sql = `
+            SELECT 
+                p.id,
+                p.numero_orden AS numeroOrden,
+                p.cliente_id AS clienteId,
+                cl.nombres AS nombreCliente,
+                cl.dni,
+                p.subtotal,
+                p.impuesto,
+                p.descuento,
+                p.total,
+                p.estado_id as estadoId,
+                pd.id as detalleId,
+                pd.platillo_id as platilloId,
+                pd.cantidad,
+                pd.precio_unitario as precioUnitario,
+                pd.sub_total as subtotalDetalle,
+                pl.nombre as nombrePlatillo,
+                pl.descripcion as descripcionPlatillo
+            FROM pedidos AS p
+            LEFT JOIN clientes AS cl ON cl.id = p.cliente_id
+            LEFT JOIN pedidodetalles AS pd ON pd.pedido_id = p.id
+            LEFT JOIN platillos AS pl ON pl.id = pd.platillo_id
+            WHERE p.id = :pedidoId`;
 
-const createPedido = async (data) => {
+        const pedidoData = await sequelize.query(sql, {
+            replacements: { pedidoId: id },
+            type: QueryTypes.SELECT
+        });
+
+        if (!pedidoData.length) {
+            return ResponseHandler.error('Pedido no encontrado', 404);
+        }
+
+        // Estructurar la respuesta
+        const pedidoEstructurado = pedidoData.reduce((acc, row) => {
+            if (!acc.id) {
+                acc = {
+                    id: row.id,
+                    numeroOrden: row.numeroOrden,
+                    nombreCliente: row.nombreCliente,
+                    dni: row.dni,
+                    total: row.total,
+                    subtotal: row.subtotal,
+                    impuesto: row.impuesto,
+                    descuento: row.descuento,
+                    estadoId: row.estadoId,
+                    detalles: []
+                };
+            }
+
+            if (row.detalleId) {
+                acc.detalles.push({
+                    id: row.detalleId,
+                    platilloId: row.platilloId,
+                    cantidad: row.cantidad,
+                    precioUnitario: row.precioUnitario,
+                    subtotal: row.subtotalDetalle,
+                    nombrePlatillo: row.nombrePlatillo,
+                    descripcionPlatillo: row.descripcionPlatillo
+                });
+            }
+
+            return acc;
+        }, {});
+
+        return ResponseHandler.success(pedidoEstructurado);
+    } catch (error) {
+        throw error;
+    }
+};
+
+const createPedido = async (data, io) => {
     const transaction = await db.sequelize.transaction()
     try {
         const {
@@ -165,7 +224,78 @@ const createPedido = async (data) => {
             transaction
         });
 
+        if (io) {
+            // Obtener el pedido completo con sus detalles para emitir
+            const sql = `
+               SELECT 
+            p.id,
+            p.numero_orden AS numeroOrden,
+            p.cliente_id AS clienteId,
+            cl.nombres AS nombreCliente,
+            cl.dni,
+            p.subtotal,
+            p.impuesto,
+            p.descuento,
+            p.total,
+            p.estado_id as estadoId,
+            pd.id as detalleId,
+            pd.platillo_id as platilloId,
+            pd.cantidad,
+            pd.precio_unitario as precioUnitario,
+            pd.sub_total as subtotalDetalle,
+            pl.nombre as nombrePlatillo,
+            pl.descripcion as descripcionPlatillo
+        FROM pedidos AS p
+        LEFT JOIN clientes AS cl ON cl.id = p.cliente_id
+        LEFT JOIN pedidodetalles AS pd ON pd.pedido_id = p.id
+        LEFT JOIN platillos AS pl ON pl.id = pd.platillo_id
+        WHERE p.id = :pedidoId`;
+
+            const pedidoCompleto = await sequelize.query(sql, {
+                replacements: { pedidoId: pedido.id },
+                type: QueryTypes.SELECT
+            });
+
+            // Estructurar los datos como en obtenerPedidosPendientes
+            const pedidoParaEmitir = pedidoCompleto.reduce((acc, row) => {
+                if (!acc.id) {
+                    acc = {
+                        id: row.id,
+                        numeroOrden: row.numeroOrden,
+                        nombreCliente: row.nombreCliente,
+                        dni: row.dni,
+                        total: row.total,
+                        subtotal: row.subtotal,
+                        impuesto: row.impuesto,
+                        descuento: row.descuento,
+                        estadoId: row.estadoId,
+                        detalles: []
+                    };
+                }
+        
+                if (row.detalleId) {
+                    acc.detalles.push({
+                        id: row.detalleId,
+                        platilloId: row.platilloId,
+                        cantidad: row.cantidad,
+                        precioUnitario: row.precioUnitario,
+                        subtotal: row.subtotalDetalle,
+                        nombrePlatillo: row.nombrePlatillo,
+                        descripcionPlatillo: row.descripcionPlatillo
+                    });
+                }
+        
+                return acc;
+            }, {});
+            console.log('Emitiendo pedido estructurado:', pedidoParaEmitir);
+            io.emit('nuevoPedido', ResponseHandler.success(pedidoParaEmitir));
+        
+        }
+
         await transaction.commit()
+
+
+
         return ResponseHandler.success(pedido, 'Pedido creado exitosamente')
     } catch (error) {
         await transaction.rollback()
