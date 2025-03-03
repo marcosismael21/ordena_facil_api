@@ -1,6 +1,7 @@
 const ResponseHandler = require('../utils/responseHandler')
 const db = require('../models')
-const { Op } = require('sequelize');
+const { Op } = require('sequelize')
+const bcryp = require("bcrypt")
 const Cliente = db.Cliente
 
 const getAllCliente = async () => {
@@ -96,6 +97,19 @@ const updateCliente = async (data, id) => {
     }
 }
 
+const updateClienteInfo = async (data, id) => {
+    try {
+        const cliente = await Cliente.update(data, {
+            where: {
+                id: id,
+            }
+        })
+        return ResponseHandler.success(cliente, 'Usuario actualizado exitosamente')
+    } catch (error) {
+        throw error
+    }
+}
+
 const deleteCliente = async (id) => {
     try {
         const cliente = await Cliente.destroy({
@@ -125,6 +139,43 @@ const login = async (usuario) => {
     }
 }
 
+const changePassword = async (clienteId, currentPassword, newPassword) => {
+    try {
+
+        const cliente = await Cliente.findOne({
+            where: {
+                id: clienteId
+            }
+        })
+
+        if (!cliente) {
+            return ResponseHandler.error('Cliente no encontrado');
+        }
+
+        const isPasswordCorrect = await bcryp.compare(currentPassword, cliente.clave);
+
+        if (!isPasswordCorrect) {
+            return ResponseHandler.error('La contraseña actual es incorrecta');
+        }
+
+        const hashedPassword = await bcryp.hash(newPassword, 10);
+
+        await Cliente.update({
+            clave: hashedPassword
+        },
+            {
+                where: {
+                    id: clienteId
+                }
+            }
+        )
+
+        return ResponseHandler.success(null, 'Contraseña actualizada exitosamente');
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     getAllCliente,
     getClienteById,
@@ -133,4 +184,6 @@ module.exports = {
     deleteCliente,
     login,
     createClienteCaja,
+    changePassword,
+    updateClienteInfo,
 }

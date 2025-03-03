@@ -272,7 +272,7 @@ const createPedido = async (data, io) => {
                         detalles: []
                     };
                 }
-        
+
                 if (row.detalleId) {
                     acc.detalles.push({
                         id: row.detalleId,
@@ -284,12 +284,12 @@ const createPedido = async (data, io) => {
                         descripcionPlatillo: row.descripcionPlatillo
                     });
                 }
-        
+
                 return acc;
             }, {});
             console.log('Emitiendo pedido estructurado:', pedidoParaEmitir);
             io.emit('nuevoPedido', ResponseHandler.success(pedidoParaEmitir));
-        
+
         }
 
         await transaction.commit()
@@ -364,10 +364,42 @@ const deletePedido = async (id) => {
     }
 }
 
+const getAllPedidoByClient = async (clienteId) => {
+    try {
+        const sql =
+            `SELECT 
+                        p.id,
+                        p.numero_orden AS numeroOrden,
+                        p.cliente_id AS clienteId,
+                        cl.nombres AS nombreCliente,
+                        cl.dni,
+                        p.colaborador_id AS colaboradorId,
+                        p.tipo_pedido_id AS tipoPedidoId,
+                        p.direccion_id AS direccionId,
+                        p.subtotal,
+                        p.impuesto,
+                        p.descuento,
+                        p.total,
+                        p.estado_id as estadoId,
+                        p.created_at AS fecha
+                    FROM pedidos AS p
+                    LEFT JOIN clientes AS cl ON cl.id = p.cliente_id    
+                    where p.cliente_id = ${clienteId}`
+        const pedido = await sequelize.query(sql, {
+            type: QueryTypes.SELECT,
+           
+        })
+        return ResponseHandler.success(pedido)
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllPedido,
     getPedidoById,
     createPedido,
     updatePedido,
-    deletePedido
+    deletePedido,
+    getAllPedidoByClient,
 }

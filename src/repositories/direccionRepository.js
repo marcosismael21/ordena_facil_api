@@ -11,6 +11,19 @@ const getAllDireccion = async () => {
     }
 }
 
+const getAllDireccionByClienteId = async (clienteId) => {
+    try {
+        const direccion = await Direccion.findAll({
+            where: {
+                clienteId: clienteId
+            }
+        })
+        return ResponseHandler.success(direccion)
+    } catch (error) {
+        throw error
+    }
+}
+
 const getDireccionById = async (id) => {
     try {
         const direccion = await Direccion.findOne({
@@ -64,5 +77,6 @@ module.exports = {
     getDireccionById,
     createDireccion,
     updateDireccion,
-    deleteDireccion
+    deleteDireccion,
+    getAllDireccionByClienteId,
 }

@@ -121,10 +121,21 @@ const deletePedido = async (req, res, next) => {
     }
 }
 
+const getAllPedidoByClient = async (req, res, next) => {
+    const clienteId = req.params.clienteId
+    try {
+        const pedidos = await pedidoService.getAllPedidoByClient(clienteId)
+        return res.status(200).json(pedidos)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllPedido,
     getPedidoById,
     createPedido,
     updatePedido,
-    deletePedido
+    deletePedido,
+    getAllPedidoByClient,
 }

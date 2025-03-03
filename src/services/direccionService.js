@@ -9,6 +9,15 @@ const getAllDireccion = async () => {
     }
 }
 
+const getAllDireccionByClienteId = async (clienteId) => {
+    try {
+        const direccion = await direccionRepository.getAllDireccionByClienteId(clienteId)
+        return (direccion) ? direccion : []
+    } catch (error) {
+        throw error
+    }
+}
+
 const getDireccionById = async (id) => {
     try {
         const direccion = await direccionRepository.getDireccionById(id)
@@ -51,4 +60,5 @@ module.exports = {
     createDireccion,
     updateDireccion,
     deleteDireccion,
+    getAllDireccionByClienteId,
 }

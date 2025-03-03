@@ -13,9 +13,11 @@ router.get('/', verifyToken, UserController.getAllCliente);
 router.get('/:id', verifyToken, UserController.getClienteById);
 router.post('/', UserController.createCliente);
 router.post('/caja', UserController.createClienteCaja);
-router.put('/:id', [verifyToken, ValidationRules(), validate], UserController.updateCliente);
+router.put('/:id', verifyToken, UserController.updateCliente);
+router.put('/infocliente/:id', verifyToken, UserController.updateClienteInfo);
 router.delete('/:id', verifyToken, UserController.deleteCliente);
 router.post('/login', UserController.login);
 router.post('/logout', UserController.logout)
+router.post('/change-password', verifyToken, UserController.changePassword)
 
 module.exports = router;

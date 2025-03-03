@@ -45,10 +45,21 @@ const deletePedido = async (id) => {
     }
 }
 
+const getAllPedidoByClient = async (clienteId) => {
+    try {
+        const extra = await pedidoRepository.getAllPedidoByClient(clienteId)
+        return (extra) ? extra : []
+    } catch (error) {
+        throw error
+    }
+ 
+}
+
 module.exports = {
     getAllPedido,
     getPedidoById,
     createPedido,
     updatePedido,
     deletePedido,
+    getAllPedidoByClient,
 }

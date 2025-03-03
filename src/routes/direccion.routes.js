@@ -10,6 +10,7 @@ router.use(validateApiKey)
 router.use(validatePlatform)
 
 router.get('/', verifyToken, direccionController.getAllDireccion)
+router.get('/cliente/:clienteId', verifyToken, direccionController.getAllDireccionByClienteId)
 router.get('/:id', verifyToken, direccionController.getDireccionById)
 router.post('/', [verifyToken, ValidationRules(), validate], direccionController.createDireccion)
 router.put('/:id', [verifyToken, ValidationRules(), validate], direccionController.updateDireccion)

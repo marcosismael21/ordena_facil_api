@@ -9,6 +9,16 @@ const getAllDireccion = async (req, res, next) => {
     }
 }
 
+const getAllDireccionByClienteId = async (req, res, next) => {
+    const clienteId = req.params.clienteId
+    try {
+        const direccion = await direccionService.getAllDireccionByClienteId(clienteId)
+        return res.status(200).json(direccion)
+    } catch (error) {
+        next(error)
+    }
+}
+
 const getDireccionById = async (req, res, next) => {
     const id = req.params.id
     try {
@@ -82,5 +92,6 @@ module.exports = {
     getDireccionById,
     createDireccion,
     updateDireccion,
-    deleteDireccion
+    deleteDireccion,
+    getAllDireccionByClienteId
 }

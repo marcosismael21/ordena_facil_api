@@ -106,6 +106,29 @@ const updateCliente = async (req, res, next) => {
     }
 }
 
+const updateClienteInfo = async (req, res, next) => {
+    const id = req.params.id;
+
+    const {
+        nombres,
+        correo,
+        telefono,
+    } = req.body;
+
+    const data = {
+        nombres,
+        correo,
+        telefono,       
+    }
+
+    try {
+        const cliente = await clienteService.updateClienteInfo(data, id);
+        return res.status(200).json(cliente);
+    } catch (error) {
+        next(error);
+    }
+}
+
 const deleteCliente = async (req, res, next) => {
     const id = req.params.id;
     try {
@@ -187,6 +210,42 @@ const logout = async (req, res, next) => {
     }
 }
 
+const changePassword = async (req, res, next) => {
+    try {
+        const clienteId = req.params.id || req.body.clienteId;
+        const { currentPassword, newPassword } = req.body;
+        
+        // Validar que se recibieron todos los parámetros necesarios
+        if (!clienteId || !currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Faltan parámetros requeridos'
+            });
+        }
+        
+        const result = await clienteService.changePassword(clienteId, currentPassword, newPassword);
+        
+        if (result.success) {
+            return res.status(200).json({
+                success: true,
+                message: result.message
+            })
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: result.message
+            })
+        }
+    } catch (error) {
+        console.error('Error al cambiar contraseña:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor'
+        });
+        next(error)
+    }
+}
+
 module.exports = {
     getAllCliente,
     getClienteById,
@@ -196,4 +255,6 @@ module.exports = {
     login,
     logout,
     createClienteCaja,
+    changePassword,
+    updateClienteInfo
 }

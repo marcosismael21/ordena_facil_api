@@ -10,6 +10,7 @@ router.use(validatePlatform)
 
 router.get('/', verifyToken, pedidoController.getAllPedido)
 router.get('/:id', verifyToken, pedidoController.getPedidoById)
+router.get('/cliente/:clienteId', verifyToken, pedidoController.getAllPedidoByClient)
 router.post('/', verifyToken, pedidoController.createPedido)
 router.put('/:id', verifyToken, pedidoController.updatePedido)
 router.delete('/:id', verifyToken, pedidoController.deletePedido)

@@ -41,6 +41,16 @@ const updateCliente = async (data, id) => {
 
 }
 
+const updateClienteInfo = async (data, id) => {
+    try {
+        const cliente = await clienteRepository.updateClienteInfo(data, id);
+        return (cliente) ? cliente : [];
+    } catch (error) {
+        throw error;
+    }
+
+}
+
 const deleteCliente = async (id) => {
     try {
         const cliente = await clienteRepository.deleteCliente(id);
@@ -103,6 +113,32 @@ const createClienteCaja = async (data) => {
  
 }
 
+const changePassword = async (clienteId, currentPassword, newPassword) => {
+    try {
+        if (newPassword.length < 6) {
+            return {
+                success: false,
+                message: 'La nueva contraseña debe tener al menos 6 caracteres'
+            }
+        }
+        
+        const result = await clienteRepository.changePassword(clienteId, currentPassword, newPassword);
+        
+        if (result.success) {
+            return {
+                success: true,
+                message: result.message
+            }
+        } else {
+            return {
+                success: false,
+                message: result.message
+            }
+        }
+    } catch (error) {
+        throw error;
+    }
+}
 
 module.exports = {
     getAllCliente,
@@ -112,4 +148,6 @@ module.exports = {
     deleteCliente,
     login,
     createClienteCaja,
+    changePassword,
+    updateClienteInfo,
 }
