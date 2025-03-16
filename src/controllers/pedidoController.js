@@ -27,6 +27,7 @@ const createPedido = async (req, res, next) => {
         tipoPedidoId,
         direccionId,
         descuentoPedido,
+        estadoId,
         //valores de pedido detalle
         platilloIds,
         cantidadPedidoDetalles,
@@ -45,6 +46,7 @@ const createPedido = async (req, res, next) => {
         tipoPedidoId,
         direccionId,
         descuentoPedido,
+        estadoId,
         //valores de pedido detalle
         platilloIds,
         cantidadPedidoDetalles,
@@ -131,6 +133,16 @@ const getAllPedidoByClient = async (req, res, next) => {
     }
 }
 
+const getPedidoDetalleByPedidoId = async (req, res, next) => {
+    const pedidoId = req.params.pedidoId
+    try {
+        const pedidos = await pedidoService.getPedidoDetalleByPedidoId(pedidoId)
+        return res.status(200).json(pedidos)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllPedido,
     getPedidoById,
@@ -138,4 +150,5 @@ module.exports = {
     updatePedido,
     deletePedido,
     getAllPedidoByClient,
+    getPedidoDetalleByPedidoId,
 }

@@ -121,6 +121,7 @@ const createPedido = async (data, io) => {
             tipoPedidoId,
             direccionId,
             descuentoPedido,
+            estadoId,
             //valores de pedido detalle
             platilloIds,
             cantidadPedidoDetalles,
@@ -165,7 +166,7 @@ const createPedido = async (data, io) => {
             impuesto: 0,
             descuento: descuentoPedido,
             total: 0,
-            estadoId: 1,
+            estadoId: estadoId ? estadoId : 2,
         }, { transaction })
 
         let totalSubtotal = 0
@@ -387,7 +388,66 @@ const getAllPedidoByClient = async (clienteId) => {
                     where p.cliente_id = ${clienteId}`
         const pedido = await sequelize.query(sql, {
             type: QueryTypes.SELECT,
-           
+        })
+        return ResponseHandler.success(pedido)
+    } catch (error) {
+        throw error
+    }
+}
+
+const getPedidoDetalleByPedidoId = async (pedidoId) => {
+    try {
+        const sql =
+            `SELECT 
+                p.id AS pedidoId,
+                p.numero_orden AS numeroOrden,
+                p.cliente_id AS clienteId,
+                cl.nombres AS nombreCliente,
+                cl.dni,
+                cl.telefono,
+                p.colaborador_id AS colaboradorId,
+                p.tipo_pedido_id AS tipoPedidoId,
+                tp.descripcion AS tipoPedido,
+                p.direccion_id AS direccionId,
+                CASE 
+                    WHEN d.alias IS NOT NULL THEN CONCAT(d.alias, ': ', d.descripcion)
+                    ELSE NULL
+                END AS direccionCompleta,
+                p.fecha_compra AS fechaCompra,
+                p.subtotal,
+                p.impuesto,
+                p.descuento,
+                p.total,
+                p.estado_id AS estadoId,
+                e.descripcion AS estadoDescripcion,
+                -- Detalles agrupados
+                GROUP_CONCAT(pd.id ORDER BY pd.id ASC SEPARATOR ',') AS pedidoDetalleIds,
+                GROUP_CONCAT(pd.platillo_id ORDER BY pd.id ASC SEPARATOR ',') AS platilloIds,
+                GROUP_CONCAT(pl.nombre ORDER BY pd.id ASC SEPARATOR ',') AS platilloNombres,
+                GROUP_CONCAT(pd.cantidad ORDER BY pd.id ASC SEPARATOR ',') AS cantidades,
+                GROUP_CONCAT(pd.precio_unitario ORDER BY pd.id ASC SEPARATOR ',') AS preciosUnitarios,
+                GROUP_CONCAT(pd.contiene_extra ORDER BY pd.id ASC SEPARATOR ',') AS contieneExtras,
+                GROUP_CONCAT(pd.sub_total ORDER BY pd.id ASC SEPARATOR ',') AS subtotalesDetalle
+            FROM 
+                pedidos AS p
+            LEFT JOIN 
+                clientes AS cl ON cl.id = p.cliente_id
+            LEFT JOIN 
+                estados AS e ON e.id = p.estado_id
+            LEFT JOIN 
+                direccions AS d ON d.id = p.direccion_id
+            LEFT JOIN 
+                pedidodetalles AS pd ON pd.pedido_id = p.id
+            LEFT JOIN 
+                platillos AS pl ON pl.id = pd.platillo_id
+            LEFT JOIN
+                tipopedidos AS tp ON tp.id = p.tipo_pedido_id
+            WHERE 
+                p.id = ${pedidoId}
+            GROUP BY 
+                p.id;`
+        const pedido = await sequelize.query(sql, {
+            type: QueryTypes.SELECT,
         })
         return ResponseHandler.success(pedido)
     } catch (error) {
@@ -402,4 +462,5 @@ module.exports = {
     updatePedido,
     deletePedido,
     getAllPedidoByClient,
+    getPedidoDetalleByPedidoId,
 }

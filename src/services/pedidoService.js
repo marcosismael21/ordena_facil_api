@@ -55,6 +55,15 @@ const getAllPedidoByClient = async (clienteId) => {
  
 }
 
+const getPedidoDetalleByPedidoId = async (pedidoId) => {
+    try {
+        const extra = await pedidoRepository.getPedidoDetalleByPedidoId(pedidoId)
+        return (extra) ? extra : []
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllPedido,
     getPedidoById,
@@ -62,4 +71,5 @@ module.exports = {
     updatePedido,
     deletePedido,
     getAllPedidoByClient,
+    getPedidoDetalleByPedidoId,
 }
