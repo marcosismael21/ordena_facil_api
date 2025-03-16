@@ -8,6 +8,7 @@ const validatePlatform = require('../middleware/platformValidation')
 router.use(validateApiKey)
 router.use(validatePlatform)
 
+router.put('/:id/enviar-cocina', verifyToken, pedidoController.changeStatus)
 router.get('/', verifyToken, pedidoController.getAllPedido)
 router.get('/:id', verifyToken, pedidoController.getPedidoById)
 router.get('/cliente/:clienteId', verifyToken, pedidoController.getAllPedidoByClient)

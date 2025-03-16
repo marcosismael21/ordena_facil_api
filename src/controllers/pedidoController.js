@@ -143,6 +143,39 @@ const getPedidoDetalleByPedidoId = async (req, res, next) => {
     }
 }
 
+const changeStatus = async (req, res, next) => {
+    const id = req.params.id
+    const { estadoId } = req.body
+    const data = { estadoId }
+    try {
+        const pedido = await pedidoService.changeStatus(data, id)
+        const pedidoActualizado = await pedidoService.getPedidoById(id)
+
+        if (estadoId === 1) { 
+            // Obtener el pedido completo con todos los detalles
+            const pedidoCompleto = await pedidoService.getPedidoById(id);
+            
+            if (pedidoCompleto.success) {
+                // Obtener el socketEvents
+                const socketEvents = req.app.get('socketEvents');
+                // Emitir el evento de nuevo pedido para cocina
+                socketEvents.emitNuevoPedido(pedidoCompleto.data);
+            }
+        }
+        
+        // Emitir evento de actualización general
+        const io = req.app.get('io');
+        io.emit('actualizacionOrden', {
+            id: id,
+            estado: estadoId === 1 ? 2 : estadoId 
+        });
+
+        return res.status(200).json(pedido)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllPedido,
     getPedidoById,
@@ -151,4 +184,5 @@ module.exports = {
     deletePedido,
     getAllPedidoByClient,
     getPedidoDetalleByPedidoId,
+    changeStatus,
 }

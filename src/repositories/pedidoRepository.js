@@ -455,6 +455,49 @@ const getPedidoDetalleByPedidoId = async (pedidoId) => {
     }
 }
 
+const changeStatus = async (data, id) => {
+    try {
+
+        const { estadoId } = data
+
+        if (estadoId === 1) {
+
+            const pedido = await Pedido.update({
+                estadoId: 2
+            }, {
+                where: {
+                    id: id
+                }
+            })
+            return ResponseHandler.success(pedido, 'Pedido Enviado a Cocina Exitosamente.')
+        }
+
+        if (estadoId === 2) {
+            const pedido = await Pedido.update({
+                estadoId: 3
+            }, {
+                where: {
+                    id: id
+                }
+            })
+            return ResponseHandler.success(pedido, 'Pedido Listo, Buen Provecho')
+        }
+
+        if (estadoId === 3) {
+            const pedido = await Pedido.update({
+                estadoId: 6
+            }, {
+                where: {
+                    id: id
+                }
+            })
+            return ResponseHandler.success(pedido, 'Pedido Finalizado Exitosamente')
+        }
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllPedido,
     getPedidoById,
@@ -463,4 +506,5 @@ module.exports = {
     deletePedido,
     getAllPedidoByClient,
     getPedidoDetalleByPedidoId,
+    changeStatus,
 }

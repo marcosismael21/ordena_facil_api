@@ -31,7 +31,7 @@ const obtenerPedidosPendientes = async () => {
             LEFT JOIN clientes AS cl ON cl.id = p.cliente_id
             LEFT JOIN pedidodetalles AS pd ON pd.pedido_id = p.id
             LEFT JOIN platillos AS pl ON pl.id = pd.platillo_id
-            WHERE p.estado_id in (1,2)
+            WHERE p.estado_id in (1,2,3)
             ORDER BY p.created_at DESC`;
 
         const pedidos = await sequelize.query(sql, {

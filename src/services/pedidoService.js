@@ -64,6 +64,16 @@ const getPedidoDetalleByPedidoId = async (pedidoId) => {
     }
 }
 
+const changeStatus = async (data, id) => {
+    try {
+        const extra = await pedidoRepository.changeStatus(data, id)
+        return (extra) ? extra : []
+    } catch (error) {
+        throw error
+    }
+ 
+}
+
 module.exports = {
     getAllPedido,
     getPedidoById,
@@ -72,4 +82,5 @@ module.exports = {
     deletePedido,
     getAllPedidoByClient,
     getPedidoDetalleByPedidoId,
+    changeStatus,
 }

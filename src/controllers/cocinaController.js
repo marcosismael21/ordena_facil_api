@@ -1,4 +1,5 @@
 const cocinaService = require('../services/cocinaService');
+const pedidoService = require('../services/pedidoService')
 
 const obtenerPedidosPendientes = async (req, res, next) => {
     try {
@@ -15,12 +16,16 @@ const actualizarEstadoPedido = async (req, res, next) => {
     
     try {
         const pedido = await cocinaService.actualizarEstadoPedido(pedidoId, estado);
+
+         // Obtener el pedido completo con todos los detalles
+         const pedidoCompleto = await pedidoService.getPedidoById(pedidoId);
         
         // Emitir actualización por socket
         const io = req.app.get('io');
         io.emit('actualizacionOrden', {
             id: pedidoId,
-            estado: estado
+            estado: estado,
+            pedido: pedidoCompleto.success ? pedidoCompleto.data : null
         });
 
         return res.status(200).json(pedido);
