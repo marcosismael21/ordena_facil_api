@@ -18,7 +18,17 @@ const actualizarEstadoPedido = async (pedidoId, estado) => {
     }
 };
 
+const obtenerPedidosCocina = async () => {
+    try {
+        const pedidos = await cocinaRepository.obtenerPedidosCocina();
+        return pedidos? pedidos : [];
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     obtenerPedidosPendientes,
-    actualizarEstadoPedido
+    actualizarEstadoPedido,
+    obtenerPedidosCocina,
 };

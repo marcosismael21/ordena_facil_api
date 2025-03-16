@@ -29,7 +29,17 @@ const actualizarEstadoPedido = async (req, res, next) => {
     }
 };
 
+const obtenerPedidosCocina = async (req, res, next) => {
+    try {
+        const pedidos = await cocinaService.obtenerPedidosCocina();
+        return res.status(200).json(pedidos);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     obtenerPedidosPendientes,
-    actualizarEstadoPedido
+    actualizarEstadoPedido,
+    obtenerPedidosCocina,
 };
