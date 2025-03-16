@@ -1,4 +1,3 @@
-// src/socket/socketEvents.js
 const ResponseHandler = require('../utils/responseHandler');
 
 class SocketEvents {
