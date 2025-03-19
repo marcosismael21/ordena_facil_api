@@ -45,7 +45,7 @@ const createColaborador = async (req, res, next) => {
         dni,
         usuario,
         clave: await bcryp.hash(clave, 10),
-        fechaVerificacionC,
+        fechaVerificacionC: Date(),
         estado
     }
 
@@ -178,6 +178,16 @@ const logout = async (req, res, next) => {
     }
 }
 
+const getAllColaboradorBySetado = async (req, res, next) => {
+    const estado = req.params.estado;
+    try {
+        const colaborador = await colaboradorService.getAllColaboradorBySetado(estado);
+        return res.status(200).json(colaborador);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     getAllColaborador,
     getColaboradorById,
@@ -186,4 +196,5 @@ module.exports = {
     deleteColaborador,
     login,
     logout,
+    getAllColaboradorBySetado,
 }

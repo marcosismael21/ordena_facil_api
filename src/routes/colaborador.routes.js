@@ -11,6 +11,7 @@ router.use(validatePlatform)
 
 router.get('/', verifyToken, UserController.getAllColaborador);
 router.get('/:id', verifyToken, UserController.getColaboradorById);
+router.get('/estado/:estado', verifyToken, UserController.getAllColaboradorBySetado);
 router.post('/', UserController.createColaborador);
 router.put('/:id', UserController.updateColaborador);
 router.delete('/:id', verifyToken, UserController.deleteColaborador);

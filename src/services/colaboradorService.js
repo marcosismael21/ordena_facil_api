@@ -11,6 +11,15 @@ const getAllColaborador = async () => {
     }
 }
 
+const getAllColaboradorBySetado = async (estado) => {
+    try {
+        const colaborador = await colaboradorRepository.getAllColaboradorBySetado(estado);
+        return (colaborador) ? colaborador : [];
+    } catch (error) {
+        throw error;
+    }
+}
+
 const getColaboradorById = async (id) => {
     try {
         const colaborador = await colaboradorRepository.getColaboradorById(id,);
@@ -101,4 +110,5 @@ module.exports = {
     updateColaborador,
     deleteColaborador,
     login,
+    getAllColaboradorBySetado,
 }

@@ -2,10 +2,40 @@ const ResponseHandler = require('../utils/responseHandler')
 const db = require('../models')
 const { Op } = require('sequelize');
 const Colaborador = db.Colaborador
+const { QueryTypes } = require('sequelize');
+const { sequelize } = require("../models");
 
 const getAllColaborador = async () => {
     try {
         const colaborador = await Colaborador.findAll()
+        return ResponseHandler.success(colaborador)
+    } catch (error) {
+        throw error
+    }
+}
+
+const getAllColaboradorBySetado = async (estado) => {
+    try {
+        const sql = `
+            SELECT 
+                p.id,
+                p.nombres,
+                p.telefono,
+                p.rol_id as rolId,
+                cl.descripcion as rol,
+                p.correo,
+                p.dni,
+                p.usuario,
+                p.clave,
+                p.fecha_verificacion_c as fechaVerificacionC,
+                p.estado
+            FROM colaboradors AS p
+            LEFT JOIN rols AS cl ON cl.id = p.rol_id
+            where p.estado = ${estado}`;
+
+        const colaborador = await sequelize.query(sql, {
+            type: QueryTypes.SELECT
+        });
         return ResponseHandler.success(colaborador)
     } catch (error) {
         throw error
@@ -103,4 +133,5 @@ module.exports = {
     updateColaborador,
     deleteColaborador,
     login,
+    getAllColaboradorBySetado,
 }
