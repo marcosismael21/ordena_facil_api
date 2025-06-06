@@ -6,6 +6,10 @@ const { tokenVerificationError } = require("../utils/tokenManager");
 
 const verifyToken = async (req, res, next) => {
     try {
+        if (req.baseUrl.startsWith('/api-mobile')) {
+            return next();
+        }
+
         let token = null;
         // Verificar si el token viene en la cabecera de autorización
         if (req.headers?.authorization) {

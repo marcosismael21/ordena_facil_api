@@ -2,16 +2,15 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const { S3Client } = require("@aws-sdk/client-s3");
-const { query } = require("express-validator");
-const { createServer } = require('http');
-const { Server } = require('socket.io');
+const {S3Client} = require("@aws-sdk/client-s3");
+const {query} = require("express-validator");
+const {createServer} = require('http');
+const {Server} = require('socket.io');
 const SocketEvents = require('./src/socket/socketEvents');
 require("dotenv").config();
 
 const PORT = process.env.PORT;
 const whiteList = [process.env.ORIGIN];
-//console.log("lista blanca:", whiteList);
 
 // Configuración del cliente S3
 const s3Client = new S3Client({
@@ -28,57 +27,39 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use(express.json({ limit: '25mb' }))
-app.use(express.urlencoded({ extended: true, limit: '25mb' }))
+app.use(express.json({limit: '25mb'}))
+app.use(express.urlencoded({extended: true, limit: '25mb'}))
 
 // Si estás usando body-parser
 const bodyParser = require('body-parser')
-app.use(bodyParser.json({ limit: '25mb' }))
-app.use(bodyParser.urlencoded({ extended: true, limit: '25mb' }))
-
-// Middleware para validar API Key
-const validateApiKey = (req, res, next) => {
-    const apiKey = req.headers['x-api-key'];
-    
-    if (!apiKey) {
-        return res.status(401).json({ message: "API key requerida" });
-    }
-
-    if (req.headers.origin === process.env.ORIGIN && apiKey === process.env.API_KEY_WEB) {
-        return next();
-    }
-    
-    if (apiKey === process.env.API_KEY_MOBILE) {
-        return next();
-    }
-
-    return res.status(401).json({ message: "API key inválida" });
-}
+app.use(bodyParser.json({limit: '25mb'}))
+app.use(bodyParser.urlencoded({extended: true, limit: '25mb'}))
 
 app.use(
     cors({
         origin: function (origin, callback) {
-            console.log("😲😲😲 Request origin =>", origin)
-            // Verificar si es una petición de desarrollo
-            if (!origin && process.env.NODE_ENV === 'development') {
-                console.log("Development request");
+            console.log("🌐 Request origin =>", origin || "undefined");
+
+            // Verificar si es una petición web (con origin en whitelist)
+            if (origin && whiteList.includes(origin)) {
+                console.log("✅ Web App request - Origin autorizado");
                 return callback(null, true);
             }
 
             // Verificar si es una petición móvil (sin origin)
             if (!origin) {
-                console.log("Mobile App request");
+                // Distinguir entre desarrollo y móvil por environment
+                if (process.env.NODE_ENV === 'development') {
+                    console.log("🔧 Development request - Sin origin");
+                } else {
+                    console.log("📱 Mobile App request - Sin origin");
+                }
                 return callback(null, true);
             }
 
-            // Verificar si es una petición web (con origin en whitelist)
-            if (whiteList.includes(origin)) {
-                console.log("Web App request");
-                return callback(null, true);
-            }
-
-            console.log("No entro ...");
-            return callback("Error de CORS origin: " + origin + " No autorizado!");
+            // Origin no autorizado
+            console.log("❌ Origin no autorizado:", origin);
+            return callback(new Error(`CORS: Origin ${origin} no autorizado`));
         },
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -89,7 +70,7 @@ app.use(
 app.use(express.json());
 
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended: true}));
 
 const db = require("./src/models");
 db.sequelize
@@ -108,15 +89,12 @@ const indexRouter = require("./src/routes/index");
 const errorHandlerMiddleware = require("./src/middleware/errorHandlerMiddleware");
 const logErrorHandlerMiddleware = require("./src/middleware/logErrorHandlerMiddleware");
 
-// Aplicar validateApiKey a las rutas que necesiten acceso a S3
-app.use('/api', validateApiKey); 
-
 app.use(indexRouter);
 app.use(logErrorHandlerMiddleware);
 app.use(errorHandlerMiddleware);
 
 app.use((req, res) => {
-    res.status(404).json({ message: "Ruta no encontrada" });
+    res.status(404).json({message: "Ruta no encontrada"});
 });
 
 const httpServer = createServer(app);
@@ -151,11 +129,6 @@ httpServer.listen(PORT, () => {
     console.log(`Server running on: http://localhost:${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV}`);
 });
-
-/*app.listen(PORT, () => {
-    console.log(`Server running on: http://localhost:${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV}`);
-});*/
 
 process.on('unhandledRejection', (err) => {
     console.log('UNHANDLED REJECTION! 💥 Shutting down...');
