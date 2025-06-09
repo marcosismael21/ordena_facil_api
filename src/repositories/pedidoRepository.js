@@ -120,6 +120,7 @@ const createPedido = async (data, io) => {
             colaboradorId,
             tipoPedidoId,
             direccionId,
+            mesaId,
             descuentoPedido,
             estadoId,
             //valores de pedido detalle
@@ -160,6 +161,7 @@ const createPedido = async (data, io) => {
             clienteId: clienteId,
             colaboradorId: colaboradorId,
             tipoPedidoId: tipoPedidoId,
+            mesaId: mesaId ? mesaId : null,
             direccionId: direccionId,
             fechaCompra: Date.now(),
             subtotal: 0,

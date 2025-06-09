@@ -26,6 +26,7 @@ const createPedido = async (req, res, next) => {
         colaboradorId,
         tipoPedidoId,
         direccionId,
+        mesaId,
         descuentoPedido,
         estadoId,
         //valores de pedido detalle
@@ -45,6 +46,7 @@ const createPedido = async (req, res, next) => {
         colaboradorId,
         tipoPedidoId,
         direccionId,
+        mesaId,
         descuentoPedido,
         estadoId,
         //valores de pedido detalle

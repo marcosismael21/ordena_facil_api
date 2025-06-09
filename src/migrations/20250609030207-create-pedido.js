@@ -18,6 +18,9 @@ module.exports = {
       colaboradorId: {
         type: Sequelize.INTEGER
       },
+      mesaId: {
+        type: Sequelize.INTEGER
+      },
       tipoPedidoId: {
         type: Sequelize.INTEGER
       },
