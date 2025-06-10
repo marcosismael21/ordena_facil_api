@@ -11,6 +11,15 @@ const getAllCliente = async () => {
     }
 }
 
+const getClienteByDni = async (dni) => {
+    try {
+        const cliente = await clienteRepository.getClienteByDni(dni);
+        return (cliente) ? cliente : [];
+    } catch (error) {
+        throw error;
+    }
+}
+
 const getClienteById = async (id) => {
     try {
         const cliente = await clienteRepository.getClienteById(id,);
@@ -150,4 +159,5 @@ module.exports = {
     createClienteCaja,
     changePassword,
     updateClienteInfo,
+    getClienteByDni,
 }

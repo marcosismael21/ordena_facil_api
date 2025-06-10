@@ -26,6 +26,19 @@ const getClienteById = async (id) => {
     }
 }
 
+const getClienteByDni = async (dni) => {
+    try {
+        const cliente = await Cliente.findOne({
+            where: {
+                dni: dni,
+            }
+        })
+        return ResponseHandler.success(cliente)
+    } catch (error) {
+        throw error
+    }
+}
+
 const createCliente = async (data) => {
     try {
         const existe = await Cliente.findOne({
@@ -186,4 +199,5 @@ module.exports = {
     createClienteCaja,
     changePassword,
     updateClienteInfo,
+    getClienteByDni,
 }

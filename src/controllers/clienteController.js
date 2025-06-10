@@ -21,6 +21,17 @@ const getClienteById = async (req, res, next) => {
     }
 }
 
+const getClienteByDni = async (req, res, next) => {
+    const dni = req.params.dni;
+    try {
+        const cliente = await clienteService.getClienteByDni(dni);
+
+        return res.status(200).json(cliente);
+    } catch (error) {
+        next(error);
+    }
+}
+
 const createCliente = async (req, res, next) => {
 
     const {
@@ -256,5 +267,6 @@ module.exports = {
     logout,
     createClienteCaja,
     changePassword,
-    updateClienteInfo
+    updateClienteInfo,
+    getClienteByDni,
 }

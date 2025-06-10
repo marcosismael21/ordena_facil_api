@@ -11,6 +11,7 @@ router.use(validatePlatform)
 
 router.get('/', verifyToken, UserController.getAllCliente);
 router.get('/:id', verifyToken, UserController.getClienteById);
+router.get('/dni/:dni', verifyToken, UserController.getClienteByDni);
 router.post('/', UserController.createCliente);
 router.post('/caja', UserController.createClienteCaja);
 router.put('/:id', verifyToken, UserController.updateCliente);
