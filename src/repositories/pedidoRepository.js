@@ -44,6 +44,8 @@ const getPedidoById = async (id) => {
                 p.id,
                 p.numero_orden AS numeroOrden,
                 p.cliente_id AS clienteId,
+                p.colaborador_id AS colaboradorId,
+                p.tipo_pedido_id AS tipoPedidoId,
                 cl.nombres AS nombreCliente,
                 cl.dni,
                 p.subtotal,
@@ -80,6 +82,9 @@ const getPedidoById = async (id) => {
                     id: row.id,
                     numeroOrden: row.numeroOrden,
                     nombreCliente: row.nombreCliente,
+                    clienteId: row.clienteId,
+                    colaboradorId: row.colaboradorId,
+                    tipoPedidoId: row.tipoPedidoId,
                     dni: row.dni,
                     total: row.total,
                     subtotal: row.subtotal,
@@ -212,9 +217,8 @@ const createPedido = async (data, io) => {
             })
         )
 
-        //totales finales
-        const impuesto = totalSubtotal * 0.15
-        const total = totalSubtotal + impuesto - descuentoPedido
+       const impuesto = totalSubtotal - (totalSubtotal / 1.15)
+       const total = totalSubtotal - descuentoPedido
 
         await pedido.update({
             subtotal: totalSubtotal,
@@ -459,7 +463,7 @@ const getPedidoDetalleByPedidoId = async (pedidoId) => {
 
 const changeStatus = async (data, id) => {
     try {
-
+/*
         const { estadoId } = data
 
         if (estadoId === 1) {
@@ -494,7 +498,41 @@ const changeStatus = async (data, id) => {
                 }
             })
             return ResponseHandler.success(pedido, 'Pedido Finalizado Exitosamente')
+        }*/
+
+        const { estadoId } = data
+
+        // Simplemente actualizar al estado que se solicita
+        const pedido = await Pedido.update({
+            estadoId: estadoId
+        }, {
+            where: {
+                id: id
+            }
+        })
+
+        let mensaje = 'Estado actualizado exitosamente';
+
+        // Mensajes según el nuevo estado
+        switch(estadoId) {
+            case 1:
+                mensaje = 'Pedido Recibido';
+                break;
+            case 2:
+                mensaje = 'Pedido Enviado a Cocina';
+                break;
+            case 3:
+                mensaje = 'Pedido Listo';
+                break;
+            case 5:
+                mensaje = 'Buen Provecho';
+                break;
+            case 6:
+                mensaje = 'Pedido Finalizado';
+                break;
         }
+
+        return ResponseHandler.success(pedido, mensaje)
     } catch (error) {
         throw error
     }

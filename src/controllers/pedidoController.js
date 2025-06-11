@@ -61,7 +61,7 @@ const createPedido = async (req, res, next) => {
     }
 
     try {
-        const socketEvents = req.app.get('socketEvents');
+        /*const socketEvents = req.app.get('socketEvents');
         const pedido = await pedidoService.createPedido(data)
 
         if (socketEvents && pedido.success) {
@@ -69,6 +69,40 @@ const createPedido = async (req, res, next) => {
             const pedidoCompleto = await pedidoService.getPedidoById(pedido.data.id);
             if (pedidoCompleto.success) {
                 socketEvents.emitNuevoPedido(pedidoCompleto.data);
+            }
+        }
+
+        return res.status(200).json(pedido);*/
+
+        const pedido = await pedidoService.createPedido(data)
+
+        if (pedido.success) {
+            const io = req.app.get('io');
+
+            // Obtener el pedido completo
+            const pedidoCompleto = await pedidoService.getPedidoById(pedido.data.id);
+
+            if (io && pedidoCompleto.success) {
+                const pedidoData = Array.isArray(pedidoCompleto.data) && pedidoCompleto.data.length > 0
+                    ? pedidoCompleto.data[0]
+                    : pedidoCompleto.data;
+
+                console.log('Emitiendo nuevo pedido creado:', pedidoData);
+
+                // Emitir nuevo pedido a TODOS los clientes
+                io.emit('nuevoPedido', {
+                    success: true,
+                    data: pedidoData
+                });
+
+                // También emitir como actualización para cocina
+                if (pedidoData.estadoId === 2) {
+                    io.emit('actualizacionOrden', {
+                        id: pedidoData.id,
+                        estado: pedidoData.estadoId,
+                        pedido: pedidoData
+                    });
+                }
             }
         }
 
@@ -147,30 +181,32 @@ const getPedidoDetalleByPedidoId = async (req, res, next) => {
 
 const changeStatus = async (req, res, next) => {
     const id = req.params.id
-    const { estadoId } = req.body
-    const data = { estadoId }
+    const {estadoId} = req.body
+    const data = {estadoId}
     try {
         const pedido = await pedidoService.changeStatus(data, id)
-        const pedidoActualizado = await pedidoService.getPedidoById(id)
 
-        if (estadoId === 1) { 
-            // Obtener el pedido completo con todos los detalles
-            const pedidoCompleto = await pedidoService.getPedidoById(id);
-            
-            if (pedidoCompleto.success) {
-                // Obtener el socketEvents
-                const socketEvents = req.app.get('socketEvents');
-                // Emitir el evento de nuevo pedido para cocina
-                socketEvents.emitNuevoPedido(pedidoCompleto.data);
-            }
-        }
-        
-        // Emitir evento de actualización general
+        // Obtener el pedido completo DESPUÉS de actualizar
+        const pedidoCompleto = await pedidoService.getPedidoById(id);
+
+        // Obtener el io
         const io = req.app.get('io');
-        io.emit('actualizacionOrden', {
-            id: id,
-            estado: estadoId === 1 ? 2 : estadoId 
-        });
+
+        if (io && pedidoCompleto.success) {
+            // Estructurar el pedido si viene como array
+            const pedidoData = Array.isArray(pedidoCompleto.data) && pedidoCompleto.data.length > 0
+                ? pedidoCompleto.data[0]
+                : pedidoCompleto.data;
+
+            console.log(`Emitiendo cambio de estado para pedido ${id} - Estado real: ${pedidoData.estadoId}`);
+
+            // Emitir con el estado ACTUAL del pedido, no el del request
+            io.emit('actualizacionOrden', {
+                id: parseInt(id),
+                estado: pedidoData.estadoId, // Usar el estado real del pedido
+                pedido: pedidoData
+            });
+        }
 
         return res.status(200).json(pedido)
     } catch (error) {
