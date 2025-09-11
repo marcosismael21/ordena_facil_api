@@ -1,27 +1,28 @@
+const ResponseHandler = require('../utils/responseHandler') 
 const errorHandlerMiddleware = (err, req, res, next) => {
-
-    const {
-        status = 500,
-        message = 'Servicio no disponible',
-        error
-    } = err
-
     // Verifica si es un error de Foreign Key
-    if (message.includes('foreign key constraint fails')) {
-        return res.status(400).json({
-            status: 400,
-            message: 'No se puede eliminar el registro porque está siendo utilizado en otra parte del sistema.',
-            error: message
-        })
+    if (err.message && err.message.includes('foreign key constraint fails')) {
+        return res.status(400).json(
+            ResponseHandler.error(
+                'No se puede eliminar el registro porque está siendo utilizado en otra parte del sistema.',
+                400,
+                err.message
+            )
+        )
     }
 
+    // Valores por defecto
+    const status = err.status || 500
+    const message = err.message || 'Servicio no disponible'
+
     // Respuesta genérica para otros errores
-    res.status(status).json({
-        status,
-        message,
-        m: err.message,
-        error
-    })
+    return res.status(status).json(
+        ResponseHandler.error(
+            message,
+            status,
+            err.error || err
+        )
+    )
 }
 
 module.exports = errorHandlerMiddleware
